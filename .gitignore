@@ -1,0 +1,30 @@
+# Local .terraform directories
+.terraform/
+
+# .terraform.lock.hcl is kept to ensure the same versions of providers and modules are used
+# if you want to ignore it, uncomment the next line
+# .terraform.lock.hcl
+
+# Local Terraform state
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+
+# Ignore override files as they are usually used for local development
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Include any sensitive or environment-specific files
+*.tfvars
+*.tfvars.json
+
+# Ignore plan output files
+*.tfplan
+
+# Ignore directory for remote backend configuration
+.terraformrc
+terraform.rc
