@@ -50,7 +50,7 @@ jobs:
       - name: Generate Baseline Master Cost
         run: |
           infracost breakdown --path=. \
-                              --format=txt \
+                              --format=table \
                               --out-file=infracost-base.txt
 
       # Checkout the current PR branch so we can create a diff.
@@ -61,7 +61,7 @@ jobs:
       - name: Generate Incoming PR Cost
         run: |
           infracost breakdown --path=. \
-                              --format=txt \
+                              --format=table \
                               --out-file=infracost.txt
 
       # Generate an Infracost diff and save it to a JSON file.
