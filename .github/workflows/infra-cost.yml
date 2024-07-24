@@ -93,8 +93,7 @@ jobs:
                                      --behavior=update
 
       - name: Slack Notification
-      
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
-          echo "SLACK_TOKEN=${SLACK_TOKEN}" >> $GITHUB_ENV
-          pip3 install slack_sdk
-          python3 ${{ github.workspace }}/slackmessenger.py
+          python3 slackmessenger.py
