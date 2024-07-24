@@ -27,7 +27,8 @@ jobs:
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Generating Cost Report for Infra Change Request Report by $COMMITTER_NAME\"}" ${{ secrets.SLACK_WEBHOOK}}
+          COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Generating Cost Report for Infra Change Request Report by $COMMIT_AUTHOR\"}" ${{ secrets.SLACK_WEBHOOK}}
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
@@ -67,7 +68,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: infracost-base
-          
+
       - name: Generate Incoming PR Cost
         run: |
           infracost breakdown --path=. \
@@ -93,6 +94,8 @@ jobs:
                                      --behavior=update
 
       - name: Slack Notification
+      
         run: |
+          echo "SLACK_TOKEN=${SLACK_TOKEN}" >> $GITHUB_ENV
           pip3 install slack_sdk
           python3 ${{ github.workspace }}/slackmessenger.py
