@@ -12,7 +12,7 @@ slack_token = os.getenv("SLACK_TOKEN")
 if not slack_token:
     raise ValueError("SLACK_TOKEN environment variable is not set")
 client = WebClient(token=slack_token)
-timestamp = os.environ["TIMESTAMP"]
+
 # presigned_url = os.environ["PRESIGNED_URL"]
 base_infra_cost = f'infracost-base.txt'
 new_infra_cost_after = f'infracost.txt'
