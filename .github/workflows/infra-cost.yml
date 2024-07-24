@@ -55,9 +55,9 @@ jobs:
       - name: Generate Infracost diff
         run: |
           infracost diff --path=. \
-                          --format=json \
-                          --compare-to=/tmp/infracost-base.txt \
-                          --out-file=/tmp/infracost.txt
+                          --format=table \
+                          --compare-to=infracost-base.txt \
+                          --out-file=infracost.txt
 
 
       - name: Post Infracost comment
