@@ -27,7 +27,7 @@ jobs:
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Generating Cost Report for Infra Change Request Report\"}" ${{ secrets.SLACK_WEBHOOK}}
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Generating Cost Report for Infra Change Request Report by $COMMITTER_NAME\"}" ${{ secrets.SLACK_WEBHOOK}}
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
