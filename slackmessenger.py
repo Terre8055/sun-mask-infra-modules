@@ -56,4 +56,4 @@ except FileNotFoundError as e:
 except SlackApiError as e:
     print(f"Error uploading file or sending message to Slack: {e.response['error']}")
 except Exception as e:
-    print(f"An error occurred: {str(e)}")
+    print(f"An error occur: {str(e)}")
