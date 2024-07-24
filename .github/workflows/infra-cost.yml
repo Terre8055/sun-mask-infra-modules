@@ -27,8 +27,7 @@ jobs:
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
-          COMMIT_AUTHOR=$(git log -1 --pretty=%an)
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Generating Cost Report for Infra Change Request Report by $COMMIT_AUTHOR\"}" ${{ secrets.SLACK_WEBHOOK}}
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Infra Change Request on Mega-Tower (Prod-Infra-Branch)\"}" ${{ secrets.SLACK_WEBHOOK}}
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
