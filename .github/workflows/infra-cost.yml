@@ -82,6 +82,15 @@ jobs:
                           --compare-to=infracost-base.json \
                           --out-file=infracost.json
 
+
+      - name: Slack Notification
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        run: |
+          pip3 install slack_sdk 
+          python3 slackmessenger.py
+
+
       # Posts a comment to the PR using the 'update' behavior.
       # This creates a single comment and updates it. The "quietest" option.
       - name: Post Infracost comment
@@ -91,9 +100,3 @@ jobs:
                                      --github-token=${{ github.token }} \
                                      --pull-request=${{ github.event.pull_request.number }} \
                                      --behavior=update
-
-      - name: Slack Notification
-        env:
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        run: |
-          python3 slackmessenger.py
