@@ -53,20 +53,31 @@ jobs:
                               --format=table \
                               --out-file=infracost-base.txt
                       
-      - name: Upload Infracost baseline as artifact
+      - name: Upload Infracost baseline json as artifact
         uses: actions/upload-artifact@v3
         with:
           name: infracost-base
           path: infracost-base.json
 
+      - name: Upload Infracost baseline table as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: infracost-base-table
+          path: infracost-base.txt
+
       # Checkout the current PR branch so we can create a diff.
       - name: Checkout PR branch
         uses: actions/checkout@v4
 
-      - name: Download Infracost baseline artifact
+      - name: Download Infracost baseline json artifact
         uses: actions/download-artifact@v3
         with:
           name: infracost-base
+
+      - name: Download Infracost baseline table artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: infracost-base-table
 
       - name: Generate Incoming PR Cost
         run: |
