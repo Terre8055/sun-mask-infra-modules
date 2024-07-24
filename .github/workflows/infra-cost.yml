@@ -27,7 +27,7 @@ jobs:
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Generating Cost Report for Infra Change Request Report\"}" ${{ secrets.SLACK_WEBHOOK}}
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Infra Change Request on Mega-Tower (Prod-Infra-Branch)\"}" ${{ secrets.SLACK_WEBHOOK}}
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
@@ -44,55 +44,70 @@ jobs:
       - name: Generate Infracost cost estimate baseline
         run: |
           infracost breakdown --path=. \
+                              --format=json \
+                              --out-file=infracost-base.json
+
+      - name: Generate Baseline Master Cost
+        run: |
+          infracost breakdown --path=. \
                               --format=table \
                               --out-file=infracost-base.txt
+                      
+      - name: Upload Infracost baseline json as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: infracost-base
+          path: infracost-base.json
+
+      - name: Upload Infracost baseline table as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: infracost-base-table
+          path: infracost-base.txt
 
       # Checkout the current PR branch so we can create a diff.
       - name: Checkout PR branch
         uses: actions/checkout@v4
+
+      - name: Download Infracost baseline json artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: infracost-base
+
+      - name: Download Infracost baseline table artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: infracost-base-table
+
+      - name: Generate Incoming PR Cost
+        run: |
+          infracost breakdown --path=. \
+                              --format=table \
+                              --out-file=infracost.txt
 
       # Generate an Infracost diff and save it to a JSON file.
       - name: Generate Infracost diff
         run: |
           infracost diff --path=. \
                           --format=json \
-                          --compare-to=/tmp/infracost-base.txt \
-                          --out-file=/tmp/infracost.txt
+                          --compare-to=infracost-base.json \
+                          --out-file=infracost.json
 
 
+      - name: Slack Notification
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+        run: |
+          pip3 install slack_sdk 
+          python3 slackmessenger.py
+
+
+      # Posts a comment to the PR using the 'update' behavior.
+      # This creates a single comment and updates it. The "quietest" option.
       - name: Post Infracost comment
         run: |
-            infracost comment github --path=infracost.txt \
+            infracost comment github --path=infracost.json \
                                      --repo=$GITHUB_REPOSITORY \
                                      --github-token=${{ github.token }} \
                                      --pull-request=${{ github.event.pull_request.number }} \
                                      --behavior=update
-
-      - name: Slack Notification
-        run: |
-          pip3 install slack_sdk
-          echo "TIMESTAMP=$(date +%Y%m%d)" >> $GITHUB_ENV
-          python3 ${{ github.workspace }}/slackmessenger.py
-
-  infracost-default-branch-update:
-    # If you use private modules, or store Terraform variables or modules in a 3rd party
-    # such as TFC or Spacelift, include the same steps/variables as the infracost-pull-request-checks job
-    name: Infracost Default Branch Update
-    if: github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'master')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Setup Infracost
-        uses: infracost/actions/setup@v3
-        with:
-          api-key: ${{ secrets.INFRACOST_API_KEY }}
-
-      - name: Checkout main/master branch
-        uses: actions/checkout@v4
-
-      - name: Run Infracost on default branch and update Infracost Cloud
-        run: |
-          infracost breakdown --path=. \
-                    --format=table \
-                    --out-file=infracost.txt
-
-          infracost upload --path=infracost.txt || echo "Always pass main branch runs even if there are policy failures"

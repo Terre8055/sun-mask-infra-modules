@@ -7,8 +7,12 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 # Initialize the Slack client
-client = WebClient(token=os.environ["SLACK_TOKEN"])
-timestamp = os.environ["TIMESTAMP"]
+# Initialize the Slack client
+slack_token = os.getenv("SLACK_TOKEN")
+if not slack_token:
+    raise ValueError("SLACK_TOKEN environment variable is not set")
+client = WebClient(token=slack_token)
+
 # presigned_url = os.environ["PRESIGNED_URL"]
 base_infra_cost = f'infracost-base.txt'
 new_infra_cost_after = f'infracost.txt'
@@ -56,4 +60,4 @@ except FileNotFoundError as e:
 except SlackApiError as e:
     print(f"Error uploading file or sending message to Slack: {e.response['error']}")
 except Exception as e:
-    print(f"An error occurred: {str(e)}")
+    print(f"An error occur: {str(e)}")
