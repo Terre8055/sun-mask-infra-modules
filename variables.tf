@@ -59,7 +59,7 @@ variable "availability_zones" {
 variable "ec2_count" {
   description = "Number of provisioned servers"
   type = number
-  default = 1
+  default = 6
 }
 
 # variable "ec2_subnetID" {

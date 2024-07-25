@@ -23,11 +23,16 @@ jobs:
         pull-requests: write
 
     steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+
       - name: Send Slack Message - Generating Report
         env:
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         run: |
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Infra Change Request on Mega-Tower (Prod-Infra-Branch)\"}" ${{ secrets.SLACK_WEBHOOK}}
+          PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Infra Change Request: $PR_TITLE\"}" $SLACK_WEBHOOK
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
@@ -94,12 +99,12 @@ jobs:
                           --out-file=infracost.json
 
 
-      - name: Slack Notification
-        env:
-          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
-        run: |
-          pip3 install slack_sdk 
-          python3 slackmessenger.py
+      # - name: Slack Notification
+      #   env:
+      #     SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      #   run: |
+      #     pip3 install slack_sdk 
+      #     python3 slackmessenger.py
 
 
       # Posts a comment to the PR using the 'update' behavior.
@@ -111,3 +116,25 @@ jobs:
                                      --github-token=${{ github.token }} \
                                      --pull-request=${{ github.event.pull_request.number }} \
                                      --behavior=update
+
+
+      - name: Send notification to Slack
+        if: always()  
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        run: |
+          infracost output --path=infracost.json --format=slack-message --out-file=slack_message.json
+
+          # Skip posting to Slack if there's no cost change
+          cost_change=$(cat infracost.json | jq -r "(.diffTotalMonthlyCost // 0) | tonumber")
+          if [ "$cost_change" = "0" ]; then
+            echo "Not posting to Slack since cost change is zero"
+            exit 0
+          fi
+
+          if [ -z "$SLACK_WEBHOOKL" ]; then
+            echo "No \$SLACK_WEBHOOK variable set. Add one to your GitHub repository"
+            exit 1
+          fi
+
+          curl -X POST -H "Content-type: application/json" -d @slack_message.json $SLACK_WEBHOOK
