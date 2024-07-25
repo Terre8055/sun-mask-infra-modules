@@ -24,7 +24,7 @@ variable "ami_id" {
 variable "inst_type" {
     description = "Instance type"
     type = string
-    default = "t3a.micro"
+    default = "t3a.xlarge"
 }
 
 # variable "az" {
