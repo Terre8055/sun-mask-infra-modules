@@ -159,4 +159,4 @@ jobs:
           --data "{ \"query\": \"mutation {updatePullRequestStatus( url: \\\"${{ github.event.pull_request.html_url }}\\\", status: $PR_STATUS )}\" }" \
           "https://dashboard.api.infracost.io/graphql";
       env:
-        INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }
+        INFRACOST_API_KEY: ${{ secrets.INFRACOST_API_KEY }}
