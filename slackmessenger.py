@@ -33,7 +33,7 @@ try:
     
     new_message = client.chat_postMessage(
         channel="C076CEFAXJ5",
-        text=f"Baseline Infra Cost Breakdown for Infra  {base}.",
+        text=f"Baseline Infra Cost Breakdown  {base}.",
     )
     print("Summary report uploaded and message sent successfully!")
 
