@@ -32,7 +32,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
         run: |
           PR_TITLE=$(jq -r .pull_request.title < $GITHUB_EVENT_PATH)
-          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Infra Change Request: $PR_TITLE\"}" $SLACK_WEBHOOK
+          curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"Infra Change Request: $PR_TITLE\"}" $SLACK_WEBHOOK_URL
 
       - name: Setup Infracost
         uses: infracost/actions/setup@v3
@@ -121,7 +121,7 @@ jobs:
       - name: Send notification to Slack
         if: always()  
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         run: |
           infracost output --path=infracost.json --format=slack-message --out-file=slack_message.json
 
@@ -132,7 +132,7 @@ jobs:
             exit 0
           fi
 
-          if [ -z "$SLACK_WEBHOOKL" ]; then
+          if [ -z "$SLACK_WEBHOOK" ]; then
             echo "No \$SLACK_WEBHOOK variable set. Add one to your GitHub repository"
             exit 1
           fi
