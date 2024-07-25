@@ -24,7 +24,7 @@ variable "ami_id" {
 variable "inst_type" {
     description = "Instance type"
     type = string
-    default = "t3a.micro"
+    default = "t3a.xlarge"
 }
 
 # variable "az" {
@@ -59,7 +59,7 @@ variable "availability_zones" {
 variable "ec2_count" {
   description = "Number of provisioned servers"
   type = number
-  default = 7
+  default = 6
 }
 
 # variable "ec2_subnetID" {
