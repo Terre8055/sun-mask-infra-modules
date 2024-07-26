@@ -52,7 +52,7 @@ resource "aws_rds_cluster" "aurora_cluster" {
 }
 
 resource "aws_rds_cluster_instance" "aurora_instances" {
-  count              = 1  # Number of instances in the cluster
+  count              = 3 # Number of instances in the cluster
   identifier         = "aurora-cluster-demo-instance-${count.index + 1}"
   cluster_identifier = aws_rds_cluster.aurora_cluster.id
   instance_class     = "db.r5.large"
