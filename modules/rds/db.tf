@@ -1,6 +1,6 @@
 resource "aws_db_instance" "default" {
   allocated_storage = 10
-  engine = "mysql"
+  engine = "aurora-mysql"
   
   instance_class = "db.t3.micro"
   username = "foo"
