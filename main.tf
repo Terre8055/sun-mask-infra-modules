@@ -20,3 +20,7 @@ module "network" {
   public_subnets_cidr = ["10.0.204.0/22"]
 
 }
+
+module "rds" {
+  source = "./modules/rds"
+}
